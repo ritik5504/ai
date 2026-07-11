@@ -55,18 +55,18 @@ const IntroSplash = ({ onComplete }) => {
 
   return (
     <motion.div 
-      className="fixed inset-0 bg-[#f3f4f6] z-50 flex flex-col items-center justify-center select-none"
+      className="fixed inset-0 bg-[#050507] z-50 flex flex-col items-center justify-center select-none"
       exit={{ 
         y: "-100%",
         transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] }
       }}
     >
       {/* Background Radial Glow */}
-      <div className="absolute w-[450px] h-[450px] bg-blue-500/5 rounded-full blur-[140px] pointer-events-none z-0"></div>
+      <div className="absolute w-[450px] h-[450px] bg-blue-900/10 rounded-full blur-[140px] pointer-events-none z-0"></div>
 
       {/* Floating Animated Circles */}
       <motion.div 
-        className="absolute w-[180px] h-[180px] border border-blue-500/5 rounded-full"
+        className="absolute w-[180px] h-[180px] border border-blue-500/10 rounded-full"
         animate={{ scale: [1, 1.25, 1], rotate: 360 }}
         transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
       />
@@ -79,7 +79,7 @@ const IntroSplash = ({ onComplete }) => {
       <div className="z-10 flex flex-col items-center gap-6">
         {/* Animated Brand Logo Icon */}
         <motion.div 
-          className="p-4.5 bg-white border border-slate-200 shadow-[0_4px_25px_rgba(0,102,255,0.08)] rounded-2xl flex items-center justify-center cursor-pointer"
+          className="p-4.5 bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-blue-500/25 rounded-2xl shadow-[0_0_40px_rgba(0,102,255,0.15)] flex items-center justify-center cursor-pointer"
           variants={logoVariants}
           initial="hidden"
           animate="visible"
@@ -91,7 +91,7 @@ const IntroSplash = ({ onComplete }) => {
         {/* Text Site Name Reveal */}
         <div className="text-center">
           <motion.h1 
-            className="text-4xl sm:text-5xl font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-blue-600 py-1"
+            className="text-4xl sm:text-5xl font-black text-white uppercase tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-blue-500 py-1"
             variants={textVariants}
             initial="hidden"
             animate="visible"
@@ -99,7 +99,7 @@ const IntroSplash = ({ onComplete }) => {
             EquityIntel
           </motion.h1>
           <motion.p 
-            className="text-xs text-gray-400 mt-2 font-mono uppercase tracking-widest"
+            className="text-xs text-gray-500 mt-2 font-mono uppercase tracking-widest"
             variants={subVariants}
             initial="hidden"
             animate="visible"
@@ -117,7 +117,7 @@ const IntroSplash = ({ onComplete }) => {
         >
           <motion.button
             onClick={onComplete}
-            className="px-6 py-3 bg-[#111111] hover:bg-black text-white font-semibold text-xs tracking-widest uppercase rounded-xl border border-slate-800 shadow-[0_4px_15px_rgba(0,0,0,0.1)] flex items-center gap-2"
+            className="px-6 py-3 bg-white hover:bg-slate-200 text-[#050507] font-semibold text-xs tracking-widest uppercase rounded-xl border border-white/20 shadow-[0_4px_15px_rgba(255,255,255,0.1)] flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -133,7 +133,7 @@ const IntroSplash = ({ onComplete }) => {
         animate={{ opacity: 0.5 }}
         transition={{ delay: 2.2 }}
       >
-        <span className="text-[10px] text-[#888888] font-mono">ESTABLISHING CONNECTION</span>
+        <span className="text-[10px] text-[#555555] font-mono">ESTABLISHING CONNECTION</span>
         <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span>
       </motion.div>
     </motion.div>

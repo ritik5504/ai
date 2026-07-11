@@ -60,7 +60,7 @@ const itemVariants = {
 const HistoryList = ({ history, onSelectReport }) => {
   if (!history || history.length === 0) {
     return (
-      <div className="glass-card rounded-2xl p-5 text-center text-gray-400 border border-slate-200">
+      <div className="glass-card rounded-2xl p-5 text-center text-slate-500 border border-neutral-800/80">
         <p className="text-sm">No recent search history.</p>
       </div>
     );
@@ -68,12 +68,12 @@ const HistoryList = ({ history, onSelectReport }) => {
 
   return (
     <motion.div 
-      className="glass-card rounded-2xl p-5 border border-slate-200 text-left shadow-sm"
+      className="glass-card rounded-2xl p-5 border border-neutral-800/80 text-left shadow-lg"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
     >
-      <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider border-b border-slate-100 pb-2.5 font-mono">
+      <h3 className="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2 uppercase tracking-wider border-b border-neutral-900 pb-2.5 font-mono">
         <FiClock className="text-[#0066FF]" />
         <span>Recent Evaluations</span>
       </h3>
@@ -91,16 +91,16 @@ const HistoryList = ({ history, onSelectReport }) => {
             <motion.button
               key={item._id || idx}
               onClick={() => onSelectReport(item)}
-              className="w-full text-left flex items-center justify-between p-3 rounded-xl bg-slate-50/50 border border-slate-200/60 hover:bg-slate-100/70 hover:border-slate-300 transition-all group animate-duration-500"
+              className="w-full text-left flex items-center justify-between p-3 rounded-xl bg-slate-950/40 border border-neutral-900 hover:bg-neutral-900/60 hover:border-neutral-800 transition-all group animate-duration-500"
               variants={itemVariants}
-              whileHover={{ scale: 1.02, x: 4, borderColor: "#111111" }}
+              whileHover={{ scale: 1.02, x: 4, borderColor: "rgba(255,255,255,0.15)" }}
               whileTap={{ scale: 0.98 }}
             >
               <div className="truncate pr-2 max-w-[55%]">
-                <span className="font-bold text-slate-800 group-hover:text-black transition-colors block truncate text-sm">
+                <span className="font-bold text-slate-200 group-hover:text-white transition-colors block truncate text-sm">
                   {item.companyName}
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono block mt-0.5">
+                <span className="text-[10px] text-slate-500 font-mono block mt-0.5">
                   {item.tickerSymbol ? item.tickerSymbol.toUpperCase() : "STOCK"}
                 </span>
               </div>
@@ -110,7 +110,7 @@ const HistoryList = ({ history, onSelectReport }) => {
                 {item.chartData && item.chartData.length > 0 ? (
                   <MiniSparkline chartData={item.chartData} />
                 ) : (
-                  <span className="text-[10px] text-slate-300 font-mono">No Chart</span>
+                  <span className="text-[10px] text-slate-600 font-mono">No Chart</span>
                 )}
               </div>
 
@@ -118,12 +118,12 @@ const HistoryList = ({ history, onSelectReport }) => {
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${
                   isInvest 
-                    ? 'bg-emerald-50/10 border-emerald-500/20 text-emerald-600' 
-                    : 'bg-rose-50/10 border-rose-500/20 text-rose-600'
+                    ? 'bg-emerald-950/40 border-emerald-900/30 text-emerald-400' 
+                    : 'bg-rose-950/40 border-rose-900/30 text-rose-400'
                 }`}>
                   {item.investmentDecision}
                 </span>
-                <FiChevronRight className="text-slate-400 group-hover:text-[#111111] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                <FiChevronRight className="text-slate-500 group-hover:text-white group-hover:translate-x-0.5 transition-all flex-shrink-0" />
               </div>
             </motion.button>
           );

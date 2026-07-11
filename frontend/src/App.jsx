@@ -7,7 +7,7 @@ import { analyzeCompany, getSearchHistory, deleteReport } from './services/api';
 import { FiTrendingUp, FiActivity } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Sequenced Step Research Loader Component - Matte Light Theme
+// Sequenced Step Research Loader Component - Dark Theme
 const ResearchLoader = ({ company }) => {
   const steps = [
     `Analyzing ${company}...`,
@@ -43,11 +43,11 @@ const ResearchLoader = ({ company }) => {
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.4 }}
     >
-      <div className="p-4 bg-emerald-50 rounded-full border border-emerald-200/50 animate-spin duration-3000">
-        <FiActivity className="text-emerald-500 text-3xl" />
+      <div className="p-4 bg-emerald-950/40 rounded-full border border-emerald-900/30 animate-spin duration-3000">
+        <FiActivity className="text-emerald-400 text-3xl" />
       </div>
       
-      <div className="w-full bg-white border border-slate-200 rounded-2xl p-6 shadow-sm text-left space-y-3 glass-card">
+      <div className="w-full bg-[#0a0a0d] border border-neutral-800/80 rounded-2xl p-6 shadow-2xl text-left space-y-3 glass-card">
         {steps.map((step, idx) => {
           const isActive = idx === currentStep;
           const isDone = idx < currentStep;
@@ -57,10 +57,10 @@ const ResearchLoader = ({ company }) => {
               key={idx}
               className={`flex items-center gap-3 text-xs md:text-sm transition-colors duration-300 ${
                 isActive 
-                  ? 'text-emerald-600 font-semibold' 
+                  ? 'text-emerald-400 font-semibold' 
                   : isDone 
                     ? 'text-slate-400' 
-                    : 'text-slate-300'
+                    : 'text-slate-600'
               }`}
               initial={{ opacity: 0, x: -10 }}
               animate={{ 
@@ -71,10 +71,10 @@ const ResearchLoader = ({ company }) => {
             >
               <span className={`w-2 h-2 rounded-full ${
                 isActive 
-                  ? 'bg-emerald-500 animate-pulse' 
+                  ? 'bg-emerald-400 animate-pulse' 
                   : isDone 
-                    ? 'bg-slate-400' 
-                    : 'bg-slate-200'
+                    ? 'bg-slate-500' 
+                    : 'bg-slate-700'
               }`}></span>
               <span>{step}</span>
             </motion.div>
@@ -147,33 +147,37 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9fb] flex flex-col justify-between overflow-x-hidden text-[#111111]">
+    <div className="min-h-screen bg-[#050507] bg-dot-grid flex flex-col justify-between overflow-x-hidden text-[#f8fafc] relative">
       <AnimatePresence mode="wait">
         {introActive && (
           <IntroSplash key="splash" onComplete={() => setIntroActive(false)} />
         )}
       </AnimatePresence>
 
-      {/* Background radial overlays */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-gradient-to-b from-blue-500/5 via-slate-500/5 to-transparent rounded-full blur-[100px] pointer-events-none z-0"></div>
+      {/* Slowly floating animated gradients in background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[130px] animate-float-1"></div>
+        <div className="absolute bottom-[20%] right-[-10%] w-[600px] h-[600px] bg-emerald-950/5 rounded-full blur-[140px] animate-float-2"></div>
+        <div className="absolute top-[40%] left-[20%] w-[400px] h-[400px] bg-indigo-950/5 rounded-full blur-[120px] animate-float-1"></div>
+      </div>
 
       {/* Header */}
       <motion.header 
-        className="border-b border-slate-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-40"
+        className="border-b border-neutral-900/80 bg-black/40 backdrop-blur-md sticky top-0 z-40"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer select-none" onClick={() => { setCurrentReport(null); setError(''); }}>
-            <div className="p-2 bg-slate-100 border border-slate-200 rounded-xl">
+            <div className="p-2 bg-neutral-900 border border-neutral-800/80 rounded-xl">
               <FiTrendingUp className="text-[#0066FF] text-xl" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-slate-800 to-slate-500">
+            <span className="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
               EquityIntel Agent
             </span>
           </div>
-          <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-full text-xs text-emerald-600 font-medium">
+          <div className="flex items-center gap-2 bg-emerald-950/40 border border-emerald-900/30 px-3 py-1 rounded-full text-xs text-emerald-400 font-medium">
             <span className="flex h-1.5 w-1.5 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
@@ -191,10 +195,10 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight leading-none">
+          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-none">
             Invest with <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0066FF] to-blue-500">AI Intelligence</span>
           </h1>
-          <p className="mt-3 text-slate-500 text-sm sm:text-base leading-relaxed">
+          <p className="mt-3 text-slate-400 text-sm sm:text-base leading-relaxed">
             Enter a ticker or company name. Our AI analyst searches business models, SWOT indexes, and industry vectors to deliver immediate recommendations.
           </p>
         </motion.div>
@@ -204,7 +208,7 @@ function App() {
 
         {/* Error Dialog */}
         {error && (
-          <div className="w-full max-w-2xl mx-auto my-4 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-600 text-sm text-center">
+          <div className="w-full max-w-2xl mx-auto my-4 p-4 bg-rose-950/20 border border-rose-900/30 rounded-2xl text-rose-400 text-sm text-center">
             {error}
           </div>
         )}
@@ -228,14 +232,14 @@ function App() {
                   <ReportViewer report={currentReport} onDelete={handleDelete} />
                 ) : (
                   <motion.div 
-                    className="h-full min-h-[300px] flex flex-col justify-center items-center text-center p-8 border border-dashed border-slate-200 rounded-3xl bg-white"
+                    className="h-full min-h-[300px] flex flex-col justify-center items-center text-center p-8 border border-dashed border-neutral-900 rounded-3xl bg-[#0a0a0d]/20"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
                   >
                     <span className="text-4xl mb-3">🔍</span>
                     <h4 className="text-slate-400 font-medium">Ready for Investment Research</h4>
-                    <p className="text-xs text-slate-400 mt-1 max-w-xs">Submit a company name above to generate or view analysis metrics.</p>
+                    <p className="text-xs text-slate-500 mt-1 max-w-xs">Submit a company name above to generate or view analysis metrics.</p>
                   </motion.div>
                 )}
               </div>
@@ -250,8 +254,8 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-6 bg-white/40 backdrop-blur-sm mt-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+      <footer className="border-t border-neutral-900/80 py-6 bg-black/40 backdrop-blur-sm mt-12">
+        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
           <p>© {new Date().getFullYear()} EquityIntel. Built for AI Product Development Intern Submission.</p>
           <p className="mt-1">Notice: Recommendations are LLM-generated and should not substitute licensed financial advice.</p>
         </div>

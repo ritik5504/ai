@@ -28,7 +28,8 @@ const generateInvestmentReport = async (companyName) => {
   const model = new ChatGoogleGenerativeAI({
     modelName: 'gemini-2.5-flash',
     apiKey: process.env.GEMINI_API_KEY,
-    temperature: 0.2 // Lower temperature for analytical reliability
+    temperature: 0.2, // Lower temperature for analytical reliability
+    maxRetries: 1
   });
 
   const promptTemplate = new PromptTemplate({
@@ -63,7 +64,11 @@ Ensure all fields in the JSON schema are populated. Do not return empty fields. 
       const jsonEnd = rawText.lastIndexOf('}');
       if (jsonStart !== -1 && jsonEnd !== -1) {
         const cleanedJson = rawText.substring(jsonStart, jsonEnd + 1);
-        return JSON.parse(cleanedJson);
+        const parsed = JSON.parse(cleanedJson);
+        // Ensure it's a valid report payload, not error metadata
+        if (parsed.companyName && parsed.investmentDecision) {
+          return parsed;
+        }
       }
     } catch (innerError) {
       throw new Error(`Failed to generate or parse AI analysis: ${innerError.message}`);
