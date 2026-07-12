@@ -9,7 +9,7 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://your-project.vercel.app"
+    "https://ai-nu-eight-26.vercel.app"
   ],
   credentials: true
 }));
