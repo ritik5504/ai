@@ -1,170 +1,153 @@
-# AI Investment Research Agent (EquityIntel)
+# EquityIntel - AI-Powered Investment Research Agent
 
-An AI-powered web application that helps users evaluate whether a company is worth investing in. Instead of manually reading annual reports, financial news, and market analysis, users simply enter the name of a company. The AI agent researches the company, analyzes multiple business factors, and generates an investment recommendation (`INVEST` or `PASS`) with clear reasoning.
-
----
-
-## 1. Overview
-The **AI Investment Research Agent** is a full-stack web application that leverages generative AI models to perform structured fundamental analysis of public companies. 
-
-### Key Features
-*   **AI-Powered Analysis**: Utilizes Google Gemini API to analyze company profiles, SWOT matrices, sector indices, and financial models.
-*   **Structured Recommendations**: Automatically generates binary recommendations (`INVEST` or `PASS`) and assigns a numerical confidence score (0-100%).
-*   **SWOT Analysis Grid**: Displays a clean, four-quadrant matrix highlighting Strengths, Weaknesses, Opportunities, and Threats/Risks.
-*   **Persistent Search History**: Saves queries and generated reports in a MongoDB database, allowing users to reload previous searches or delete them from their history dashboard.
-*   **Premium Visual UI**: Features a modern, dark-mode glassmorphic interface built with React, styled using Tailwind CSS, and powered by micro-animations.
+EquityIntel is a premium, real-time AI-powered investment research terminal. By combining the cognitive capabilities of Large Language Models (LLM) with live market quote engines, the agent conducts fundamental analysis, compiles SWOT profiles, estimates target buy valuations, and generates interactive stock price trends—all formatted uniformly in Indian Rupees (INR, ₹).
 
 ---
 
-## 2. How to Run It
+## Overview
+Evaluating stock opportunities requires cross-referencing multiple data vectors: financial metrics, historical prices, growth catalysts, and risk factors. EquityIntel automates this pipeline. Simply search a company name or ticker, and the AI agent researches the company's business model, retrieves live historical closes from Yahoo Finance, formats currencies, and provides an immediate, structured `INVEST` or `PASS` evaluation alongside a confidence index.
 
-### Prerequisites
-*   [Node.js](https://nodejs.org/) (v16+ recommended)
-*   [MongoDB](https://www.mongodb.com/try/download/community) (running locally or via MongoDB Atlas cloud URI)
-*   [Google Gemini API Key](https://ai.google.dev/) (Generate one from Google AI Studio)
+## Features
+*   **AI Fundamental Analyst**: Generates analytical summaries, industry sectors, catalyst indexes, and risk vectors using Google Gemini 2.5-Flash.
+*   **Structured Buy Targets**: Computes Fair Value Estimates, Target Entry Buy Ranges, and 1-Year Price Targets.
+*   **Uniform INR Formatting (₹)**: Converts all international currencies (USD, EUR, etc.) to Indian Rupees using approximate exchange rates.
+*   **Interactive Crosshair SVG Chart**: Custom-designed SVG chart displaying a 10-day price trend. Tracks mouse movements to display a vertical guide line, glowing data points, and a floating HUD tooltip showing close prices and dates.
+*   **Dynamic Trend Colors**: The stock line and glow automatically colorize in **Emerald Green** (positive 10-day trend) or **Rose Red** (negative 10-day trend).
+*   **Sequential Loading Animation**: A dynamic step-tracker displaying the agent's progress (e.g., *Collecting Data*, *Reading Trends*, *Building SWOT*) during research.
+*   **Today's Market Movers**: A split-layout sidebar listing the day's Top 5 Gaining and Top 5 Losing stocks (TCS, Reliance, Apple, Tesla, etc.) with price tickers, percentage change indicators, and mini-sparklines.
+*   **Bento Evaluation History**: Sidebar lists the last 20 queries, displaying a mini-sparkline showing price trend directions and instant click-to-load retrieval.
+
+## Tech Stack
+*   **Frontend**: React (Vite), Framer Motion, TailwindCSS, Axios, React Icons.
+*   **Backend**: Node.js, Express, MongoDB Atlas, Mongoose.
+*   **AI Integration**: LangChain, Google Generative AI (`@langchain/google-genai`), Zod Schemas.
+*   **Market Data**: Yahoo Finance API.
 
 ---
 
-### Step-by-Step Installation
+## Project Architecture
 
-#### 1. Clone & Set Up Directory
-```bash
-git clone https://github.com/yourusername/AI-Investment-Agent.git
-cd AI-Investment-Agent
+```mermaid
+graph TD
+    User([User Client]) -->|Search Query| App[React App]
+    App -->|POST /api/analyze| ExpressServer[Express Backend]
+    ExpressServer -->|1. Build Prompt & Format Schema| LangChain[LangChain + Gemini 2.5-Flash]
+    LangChain -->|2. Structured JSON Report| ExpressServer
+    ExpressServer -->|3. Extract Ticker & Fetch Closes| YahooFinance[Yahoo Finance API]
+    YahooFinance -->|4. Convert to INR & Format| ExpressServer
+    ExpressServer -->|5. Save Combined Payload| MongoDB[(MongoDB Atlas)]
+    ExpressServer -->|6. Return Report Object| App
+    App -->|Interactive Cursor hover| SVGChart[Interactive SVG Crosshair Chart]
+    App -->|GET /api/market-movers| Movers[Today's Movers quotes]
 ```
 
-#### 2. Backend Setup
-1. Navigate to the `backend/` directory:
-   ```bash
-   cd backend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` file in the root of the `backend/` folder and insert your credentials:
-   ```env
-   PORT=5000
-   MONGO_URI=mongodb://localhost:27017/ai_investment_agent
-   GEMINI_API_KEY=your_actual_gemini_api_key_here
-   ```
-4. Start the backend development server:
-   ```bash
-   npm run dev
-   ```
-
-#### 3. Frontend Setup
-1. Open a new terminal and navigate to the `frontend/` directory:
-   ```bash
-   cd ../frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Vite React development server:
-   ```bash
-   npm run dev
-   ```
-4. Access the web interface in your browser at `http://localhost:5173`.
+### Endpoints:
+*   `POST /api/analyze`: Generates a full investment analysis report for a given company name.
+*   `GET /api/history`: Retrieves the last 20 generated reports to populate the sidebar.
+*   `GET /api/market-movers`: Batch fetches quote metrics for top gainers/losers.
+*   `DELETE /api/report/:id`: Deletes a custom report by database ID.
 
 ---
 
-## 3. How It Works
+## How to Run
 
-### Architecture Diagram
-```text
-                      +-------------------+
-                      |   React Frontend  |
-                      | (Tailwind/Vite)   |
-                      +---------+---------+
-                                |
-                   HTTP Request | (Axios)
-                                v
-                      +---------+---------+
-                      |   Express Server  |
-                      |    (Node.js)      |
-                      +---------+---------+
-                                |
-              +-----------------+-----------------+
-              |                                   |
-              v                                   v
-    +---------+---------+               +---------+---------+
-    |  LangChain Agent  |               |  Database Layer   |
-    | (Structured output|               |    (MongoDB)      |
-    |   Zod validation) |               +-------------------+
-    +---------+---------+
-              |
-              v
-    +---------+---------+
-    | Google Gemini API |
-    | (gemini-1.5-flash)|
-    +-------------------+
+### 1. Prerequisites
+*   Node.js (v18+)
+*   NPM
+*   MongoDB Instance (local or Atlas cluster)
+
+### 2. Setup the Backend
+1.  Navigate to the backend directory:
+    ```bash
+    cd backend
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Configure your environment variables in `.env` (see below).
+4.  Start the server:
+    ```bash
+    npm run dev
+    ```
+
+### 3. Setup the Frontend
+1.  Navigate to the frontend directory:
+    ```bash
+    cd frontend
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Configure your Vercel/local variables in `.env`.
+4.  Start the client:
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## Environment Variables
+
+### Backend Configuration (`backend/.env`):
+```env
+PORT=5001
+MONGO_URI=mongodb+srv://rajritik34_db_user:ritik1234@cluster0.vontusx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority&appName=Cluster0
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-### Flow of Execution
-1.  **User Input**: The user enters a company name (e.g., *Nvidia* or *Tesla*) into the React frontend.
-2.  **API Call**: The client dispatches a POST request to `/api/analyze` containing the company string.
-3.  **Search Logged**: The backend Express controller immediately logs the company query in the MongoDB `SearchHistory` collection.
-4.  **AI Orchestration**: The LangChain.js framework builds an instruction prompt containing:
-    *   The analyst target (`{company}`).
-    *   Zod-based structural requirements (defining fields: `overview`, `industry`, `strengths`, `weaknesses`, `opportunities`, `threats`, `investmentDecision`, `reasoning`, and `confidenceScore`).
-5.  **LLM Execution**: The prompt is processed by the `gemini-1.5-flash` model.
-6.  **Parsing & Storage**: LangChain parses the output into a validated JSON object. The backend controller stores this report in the MongoDB `Reports` collection.
-7.  **Dashboard Render**: The frontend receives the JSON response and renders it dynamically on the glassmorphic SWOT and decision dashboard.
+### Frontend Configuration (`frontend/.env`):
+```env
+VITE_API_URL=https://ai-ltx7.onrender.com
+```
 
 ---
 
-## 4. Key Decisions & Trade-offs
-
-### 1. Choice of LangChain.js over Direct API Calling
-*   **Why**: LangChain simplifies structured output parsing using Zod models. Instead of manually formatting string responses or cleaning up markdown text blocks, LangChain's `StructuredOutputParser` enforces validation at the library layer.
-*   **Trade-off**: Increases bundle size and dependency footprint for the backend, but significantly lowers prompt engineering errors and runtime parser crashes.
-
-### 2. NoSQL MongoDB over SQL
-*   **Why**: AI-generated investment briefs have variable metadata and can expand over time (e.g., adding news nodes, price lists, or financial matrices). MongoDB's schema-less nature matches this flexibility.
-*   **Trade-off**: Sacrifices ACID relational integrity, which is acceptable since reports do not currently cross-reference complex multi-table joins.
-
-### 3. Google Gemini 1.5 Flash over Gemini 1.5 Pro
-*   **Why**: For quick interactive searches on a website, latency is critical. `gemini-1.5-flash` offers near-instant response speeds (often under 3-4 seconds for deep analysis) with a generous free tier compared to `gemini-1.5-pro`.
-*   **Trade-off**: The Flash model has slightly less logical reasoning power compared to Pro, but this is mitigated by injecting strong, structured system prompts and analytical system frameworks.
-
-### 4. Static Knowledge vs. Live Financial Feeds
-*   **Why**: Using the LLM’s internal knowledge base keeps the architecture simple, clean, and zero-cost (no expensive financial APIs like Bloomberg, Alpha Vantage, or Yahoo Finance required).
-*   **Trade-off**: Recommendations are bounded by the LLM’s training cutoff and lack real-time stock price changes or intraday news events. This trade-off is documented on the user interface.
+## How It Works
+1.  **Search Input**: The user enters a company name (e.g., "Apple" or "TCS").
+2.  **AI Research Generation**: The server passes this to LangChain, instructing Gemini 2.5-Flash to analyze fundamentals and map the response strictly to a Zod schema containing tickers, sector summary, SWOT arrays, and Indian Rupee targets.
+3.  **Financial API Query**: The backend reads the ticker returned by the AI model (e.g. `AAPL` or `TCS.NS`) and pulls its closing prices for the last 10 days via Yahoo Finance.
+4.  **Exchange Conversion**: If the stock is foreign, prices are multiplied by approximate INR exchange rates.
+5.  **Persistence**: The combined dataset (AI analysis + Rupees price arrays) is saved to MongoDB.
+6.  **HUD Render**: The frontend receives the object and updates the state. Numbers count up dynamically, and the custom SVG chart becomes active with crosshair mouse tracking.
 
 ---
 
-## 5. Example Runs
-
-### Example Run 1: Microsoft (MSFT)
-*   **Investment Decision**: `INVEST`
-*   **Confidence Score**: `92%`
-*   **Overview**: Microsoft is a global technology company with strong businesses in cloud computing (Azure), enterprise software, AI integration (Copilot), and gaming.
-*   **SWOT Summary**:
-    *   *Strengths*: Dominance in enterprise software, Azure's high-margin recurring growth, and early-mover advantage in AI.
-    *   *Weaknesses*: Exposure to regulatory scrutiny (antitrust) and minor legacy slow-down segments.
-    *   *Opportunities*: Monetizing AI integrations across productivity suites and expansion in cloud infrastructure.
-    *   *Threats*: Intense competition from Amazon Web Services (AWS) and Google Cloud Platform (GCP).
-*   **Reasoning**: Microsoft demonstrates consistent financial performance, strong free cash flow, diversified products, and clear leadership in the AI revolution. While regulatory risks exist, its enterprise lock-in and cloud runway make it an attractive long-term investment.
+## Key Decisions & Trade-offs
+*   **LangChain Structured Output vs Raw JSON**: Setting Zod validation schemas guarantees that the AI returns exact formatting keys. However, API validation failures originally threw unhandled mongoose exceptions. We implemented a custom fallback parser validating JSON keys to prevent database validation crashes.
+*   **Custom SVG Charting vs Chart Libraries (Recharts/ChartJS)**: Rather than adding heavy chart package weights which slow down compilation and bundlers, we built a native SVG chart. This allowed us to write custom mouse tracking columns to render the interactive crosshair guidelines and floating HUD tooltips.
+*   **Fast-Fail Retries**: Changed default LangChain retries from 7 times down to 1. This prevents the server from hanging for 2 minutes when keys are invalid, failing cleanly in 2 seconds instead.
 
 ---
 
-### Example Run 2: Intel Corporation (INTC)
-*   **Investment Decision**: `PASS`
-*   **Confidence Score**: `75%`
-*   **Overview**: Intel is an American semiconductor chip manufacturer, historically dominant in PC and server processors, now transitioning towards a foundry service model.
-*   **SWOT Summary**:
-    *   *Strengths*: Established x86 market share, domestic manufacturing footprint, and government backing via the CHIPS Act.
-    *   *Weaknesses*: Lags behind in mobile, AI GPU computing, and advanced manufacturing nodes.
-    *   *Opportunities*: Expansion of Intel Foundry Services (IFS) and demand for domestic chip supply.
-    *   *Threats*: Market share erosion to AMD and ARM-based chips, high capital expenditures.
-*   **Reasoning**: Intel is undergoing a risky, highly capital-intensive turnaround strategy. Until foundry operations achieve profitability and market competitiveness, the financial strain and margins compress the investment profile, warranting a PASS for lower-risk seeking investors.
+## Example Runs
+1.  **Search "Nvidia"**:
+    *   Generates ticker `NVDA`.
+    *   Determines `INVEST` decision with 92% confidence based on graphics accelerator dominance.
+    *   Converts prices to INR (~₹74,000 range) and plots a glowing green up-trend line.
+2.  **Search "Tesla"**:
+    *   Generates ticker `TSLA`.
+    *   Evaluates `PASS` based on electric vehicle margin saturation.
+    *   Plots a glowing red down-trend line.
 
 ---
 
-## 6. What We Would Improve with More Time
-1.  **Live Financial Integration**: Connect API endpoints to services like Yahoo Finance or Alpha Vantage to fetch live stock charts, historical P/E ratios, and trading volumes.
-2.  **Web Search Tooling (RAG)**: Enhance the LangChain agent with a Google Search tool (using Serper API) to retrieve current day news sentiment and earnings transcripts, solving the knowledge cutoff limit.
-3.  **PDF Export & Email Reports**: Add a feature to download the generated investment report as a formatted PDF or email it directly to a user.
-4.  **Portfolio Watchlist**: Enable authenticated users to save multiple companies to a watchlist dashboard to monitor investment decisions over time.
+## Future Improvements
+*   **Real-time Stock Websockets**: Integrate real-time websockets to pipe stock prices dynamically rather than batch pooling.
+*   **PDF Report Exports**: Add a backend pdf compiler allowing users to export the full bento research dashboard with one click.
+*   **Technical Indicator Overlay**: Allow users to toggle MACD or RSI guidelines directly on the custom SVG chart.
+
+---
+
+## Live Demo
+
+Frontend:
+https://ai-nu-eight-26.vercel.app/
+
+Backend:
+https://ai-ltx7.onrender.com
+
+
+GitHub Repository:
+https://github.com/ritik5504/ai
