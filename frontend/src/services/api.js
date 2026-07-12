@@ -21,3 +21,8 @@ export const deleteReport = async (id) => {
   const response = await API.delete(`/report/${id}`);
   return response.data;
 };
+
+export const getMarketMovers = async () => {
+  const response = await API.get('/market-movers');
+  return response.data;
+};

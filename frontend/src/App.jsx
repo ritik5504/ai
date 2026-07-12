@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import SearchBox from './components/SearchBox';
 import ReportViewer from './components/ReportViewer';
 import HistoryList from './components/HistoryList';
+import MarketMovers from './components/MarketMovers';
 import IntroSplash from './components/IntroSplash';
 import { analyzeCompany, getSearchHistory, deleteReport } from './services/api';
 import { FiTrendingUp, FiActivity } from 'react-icons/fi';
@@ -115,8 +116,6 @@ function App() {
 
     try {
       const report = await analyzeCompany(companyName);
-      // Wait for loader simulation sequence to reach report status (minimum 5.5 seconds visual delay)
-      await new Promise(resolve => setTimeout(resolve, 5500));
       setCurrentReport(report);
       await fetchHistory(); // Refresh history log list
     } catch (err) {
@@ -190,7 +189,7 @@ function App() {
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full z-10">
         <motion.div 
-          className="text-center max-w-2xl mx-auto mt-6 mb-4"
+          className="text-center max-w-2xl mx-auto mt-6 mb-8"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -203,9 +202,6 @@ function App() {
           </p>
         </motion.div>
 
-        {/* Input Control */}
-        <SearchBox onSearch={handleSearch} isLoading={isLoading} />
-
         {/* Error Dialog */}
         {error && (
           <div className="w-full max-w-2xl mx-auto my-4 p-4 bg-rose-950/20 border border-rose-900/30 rounded-2xl text-rose-400 text-sm text-center">
@@ -213,44 +209,54 @@ function App() {
           </div>
         )}
 
-        {/* Interactive transitions area */}
-        <AnimatePresence mode="wait">
-          {isLoading ? (
-            <ResearchLoader key="loader" company={searchingCompany} />
-          ) : (
-            <motion.div 
-              key="content"
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {/* Report Display */}
-              <div className="lg:col-span-8">
-                {currentReport ? (
-                  <ReportViewer report={currentReport} onDelete={handleDelete} />
-                ) : (
-                  <motion.div 
-                    className="h-full min-h-[300px] flex flex-col justify-center items-center text-center p-8 border border-dashed border-neutral-900 rounded-3xl bg-[#0a0a0d]/20"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <span className="text-4xl mb-3">🔍</span>
-                    <h4 className="text-slate-400 font-medium">Ready for Investment Research</h4>
-                    <p className="text-xs text-slate-500 mt-1 max-w-xs">Submit a company name above to generate or view analysis metrics.</p>
-                  </motion.div>
-                )}
-              </div>
+        {/* Grid split */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-4">
+          
+          {/* Left Column: Search box, loader/viewer, history */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
+            
+            {/* Input Control */}
+            <SearchBox onSearch={handleSearch} isLoading={isLoading} />
+            
+            <AnimatePresence mode="wait">
+              {isLoading ? (
+                <ResearchLoader key="loader" company={searchingCompany} />
+              ) : (
+                <motion.div
+                  key="content"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {currentReport ? (
+                    <ReportViewer report={currentReport} onDelete={handleDelete} />
+                  ) : (
+                    <motion.div 
+                      className="h-full min-h-[300px] flex flex-col justify-center items-center text-center p-8 border border-dashed border-neutral-900 rounded-3xl bg-[#0a0a0d]/20"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <span className="text-4xl mb-3">🔍</span>
+                      <h4 className="text-slate-400 font-medium">Ready for Investment Research</h4>
+                      <p className="text-xs text-slate-500 mt-1 max-w-xs">Submit a company name above to generate or view analysis metrics.</p>
+                    </motion.div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              {/* Sidebar Queries History */}
-              <div className="lg:col-span-4">
-                <HistoryList history={history} onSelectReport={handleSelectReport} />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            {/* Sidebar Queries History placed below the report display */}
+            <HistoryList history={history} onSelectReport={handleSelectReport} />
+          </div>
+
+          {/* Right Column: Today's Gainers & Losers */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <MarketMovers />
+          </div>
+
+        </div>
       </main>
 
       {/* Footer */}
