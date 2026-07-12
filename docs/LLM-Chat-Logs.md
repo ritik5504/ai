@@ -3474,7 +3474,7 @@ Add the variables one-by-one by typing the following:
 #### 2. MongoDB Connection URI (Required)
 *   **NAME_OF_VARIABLE**: `MONGO_URI`
 *   *If you are using a cloud database (like MongoDB Atlas) for your deployment:*
-    *   **value**: `mongodb+srv://your_username:your_password@cluster0.xxxx.mongodb.net/your_db_name`
+    *   **value**: `mongodb+srv://<username>:<password>@<cluster-url>/<database-name>`
 *   *If you are testing it locally or have a database hosted on the same platform:*
     *   **value**: `mongodb://127.0.0.1:27017/ai_investment_agent`
 
@@ -3612,7 +3612,7 @@ To solve this, you need to host your database in the cloud. The easiest and free
 2. Select **Drivers**.
 3. Copy the connection string. It will look like this:
    ```text
-   mongodb+srv://ritik:<db_password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+   mongodb+srv://<username>:<password>@<cluster-url>/?retryWrites=true&w=majority
    ```
 
 ### Step 4: Add to Render Environment Variables
@@ -3666,7 +3666,7 @@ Please review [implementation_plan.md](file:///Users/ritiksingh/.gemini/antigrav
 ## [Step 39] USER INPUT
 
 <USER_REQUEST>
-MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/ai_investment_agent?retryWrites=true&w=majority
 
 this is new
 </USER_REQUEST>
@@ -3700,7 +3700,7 @@ Since you have updated your local `.env` file, you now need to **update the vari
 2. Click the **Environment** tab on the left sidebar.
 3. Edit the value for **`MONGO_URI`** and paste your new Atlas connection string:
    ```text
-   mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority
+   mongodb+srv://<username>:<password>@<cluster-url>/ai_investment_agent?retryWrites=true&w=majority
    ```
 4. Click the blue **Save Changes** button at the bottom of the page.
 5. Click **Manual Deploy** -> **Clear Cache & Deploy** at the top right of your Render service.

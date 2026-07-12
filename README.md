@@ -93,7 +93,7 @@ graph TD
 ### Backend Configuration (`backend/.env`):
 ```env
 PORT=5001
-MONGO_URI=mongodb+srv://your_username:your_password@cluster0.xxxx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
