@@ -32,7 +32,7 @@ const SearchBox = ({ onSearch, isLoading }) => {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Enter company name (e.g., Apple, Tesla, Nvidia)..."
+          placeholder="Enter company name (e.g., Tata Motors, Reliance, Infosys)..."
           disabled={isLoading}
           className="w-full pl-12 pr-28 py-4 bg-transparent border-none rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-0 text-base"
         />

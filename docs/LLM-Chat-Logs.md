@@ -3666,7 +3666,7 @@ Please review [implementation_plan.md](file:///Users/ritiksingh/.gemini/antigrav
 ## [Step 39] USER INPUT
 
 <USER_REQUEST>
-MONGO_URI=mongodb+srv://rajritik34_db_user:ritik1234@cluster0.vontusx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority&appName=Cluster0
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority
 
 this is new
 </USER_REQUEST>
@@ -3700,7 +3700,7 @@ Since you have updated your local `.env` file, you now need to **update the vari
 2. Click the **Environment** tab on the left sidebar.
 3. Edit the value for **`MONGO_URI`** and paste your new Atlas connection string:
    ```text
-   mongodb+srv://rajritik34_db_user:ritik1234@cluster0.vontusx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority&appName=Cluster0
+   mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/ai_investment_agent?retryWrites=true&w=majority
    ```
 4. Click the blue **Save Changes** button at the bottom of the page.
 5. Click **Manual Deploy** -> **Clear Cache & Deploy** at the top right of your Render service.
@@ -3764,13 +3764,13 @@ Our diagnostic checks confirmed that MongoDB Atlas is rejecting the connection b
 
 `CONNECTION FAILED: bad auth : authentication failed`
 
-This means the database user `rajritik34_db_user` either has a different password, or the user was not saved correctly on Atlas.
+This means the database user `your_username` either has a different password, or the user was not saved correctly on Atlas.
 
 ### How to reset your credentials on MongoDB Atlas:
 1. Log in to your **MongoDB Atlas** dashboard.
 2. Under the **Security** section on the left sidebar, click on **Database Access**.
-3. Locate your database user `rajritik34_db_user` and click **Edit** (on the right-side of the row).
-4. Click **Edit Password** and type a new password (for example: `ritik1234`).
+3. Locate your database user `your_username` and click **Edit** (on the right-side of the row).
+4. Click **Edit Password** and type a new password.
 5. Scroll down and click the green **Update User** button to save it.
 6. **Wait 20 seconds** for Atlas to propagate the password update to all database nodes.
 
