@@ -1,6 +1,16 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const getApiUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5001';
+  }
+  return 'https://ai-ltx7.onrender.com';
+};
+
+const API_URL = getApiUrl();
 
 export const analyzeCompany = async (companyName) => {
   const response = await axios.post(`${API_URL}/api/analyze`, { company: companyName });

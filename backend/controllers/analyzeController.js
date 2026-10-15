@@ -73,8 +73,12 @@ const analyzeCompany = async (req, res) => {
   }
 
   try {
-    // 1. Add to search history log
-    await SearchHistory.create({ companyName: company.trim() });
+    // 1. Add to search history log (non-blocking if DB offline)
+    try {
+      await SearchHistory.create({ companyName: company.trim() });
+    } catch (dbErr) {
+      console.warn('Could not save search history to DB:', dbErr.message);
+    }
 
     // 2. Generate the report via LangChain & Gemini
     const reportData = await aiService.generateInvestmentReport(company.trim());
@@ -88,10 +92,18 @@ const analyzeCompany = async (req, res) => {
       chartData
     };
 
-    // 5. Save report to database
-    const savedReport = await Report.create(finalReportData);
-
-    return res.status(200).json(savedReport);
+    // 5. Save report to database (fallback to direct payload if DB fails)
+    try {
+      const savedReport = await Report.create(finalReportData);
+      return res.status(200).json(savedReport);
+    } catch (dbErr) {
+      console.warn('Could not persist report to DB, returning live payload:', dbErr.message);
+      return res.status(200).json({
+        ...finalReportData,
+        _id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      });
+    }
   } catch (error) {
     console.error('Error in analyzeCompany:', error);
     return res.status(500).json({ 
@@ -109,8 +121,8 @@ const getHistory = async (req, res) => {
     const history = await Report.find().sort({ createdAt: -1 }).limit(20);
     return res.status(200).json(history);
   } catch (error) {
-    console.error('Error in getHistory:', error);
-    return res.status(500).json({ error: 'Failed to fetch search history.' });
+    console.error('Error in getHistory:', error.message);
+    return res.status(200).json([]);
   }
 };
 

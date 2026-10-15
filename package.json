@@ -1,0 +1,10 @@
+{
+  "name": "ai-investment-agent",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix backend run dev",
+    "client": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build"
+  }
+}
