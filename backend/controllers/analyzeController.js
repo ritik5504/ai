@@ -1,6 +1,9 @@
+const mongoose = require('mongoose');
 const Report = require('../models/Report');
 const SearchHistory = require('../models/SearchHistory');
 const aiService = require('../services/aiService');
+
+const isDbConnected = () => mongoose.connection.readyState === 1;
 
 // Helper to fetch 10-day stock price trend from Yahoo Finance
 const fetchYahooFinanceChart = async (ticker) => {
@@ -73,11 +76,13 @@ const analyzeCompany = async (req, res) => {
   }
 
   try {
-    // 1. Add to search history log (non-blocking if DB offline)
-    try {
-      await SearchHistory.create({ companyName: company.trim() });
-    } catch (dbErr) {
-      console.warn('Could not save search history to DB:', dbErr.message);
+    // 1. Add to search history log if DB is connected
+    if (isDbConnected()) {
+      try {
+        await SearchHistory.create({ companyName: company.trim() });
+      } catch (dbErr) {
+        console.warn('Could not save search history to DB:', dbErr.message);
+      }
     }
 
     // 2. Generate the report via LangChain & Gemini
@@ -92,18 +97,21 @@ const analyzeCompany = async (req, res) => {
       chartData
     };
 
-    // 5. Save report to database (fallback to direct payload if DB fails)
-    try {
-      const savedReport = await Report.create(finalReportData);
-      return res.status(200).json(savedReport);
-    } catch (dbErr) {
-      console.warn('Could not persist report to DB, returning live payload:', dbErr.message);
-      return res.status(200).json({
-        ...finalReportData,
-        _id: Date.now().toString(),
-        createdAt: new Date().toISOString()
-      });
+    // 5. Save report to database if connected, or return immediate payload
+    if (isDbConnected()) {
+      try {
+        const savedReport = await Report.create(finalReportData);
+        return res.status(200).json(savedReport);
+      } catch (dbErr) {
+        console.warn('Could not persist report to DB:', dbErr.message);
+      }
     }
+
+    return res.status(200).json({
+      ...finalReportData,
+      _id: Date.now().toString(),
+      createdAt: new Date().toISOString()
+    });
   } catch (error) {
     console.error('Error in analyzeCompany:', error);
     return res.status(500).json({ 
@@ -117,6 +125,9 @@ const analyzeCompany = async (req, res) => {
 // @route   GET /api/history
 // @access  Public
 const getHistory = async (req, res) => {
+  if (!isDbConnected()) {
+    return res.status(200).json([]);
+  }
   try {
     const history = await Report.find().sort({ createdAt: -1 }).limit(20);
     return res.status(200).json(history);
@@ -130,6 +141,9 @@ const getHistory = async (req, res) => {
 // @route   DELETE /api/report/:id
 // @access  Public
 const deleteReport = async (req, res) => {
+  if (!isDbConnected()) {
+    return res.status(200).json({ message: 'Report removed.' });
+  }
   try {
     const report = await Report.findByIdAndDelete(req.params.id);
     if (!report) {
